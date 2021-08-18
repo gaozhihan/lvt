@@ -61,7 +61,7 @@ class ScaledDotProductAttention(nn.Module):
     def forward(self, q, k, v, B, M=None):
         # q, k, v: na, b, thw, da
         attn = torch.matmul(q, k.transpose(2, 3)) / self.temper  # na, b, thw, thw
-        attn = attn + B
+        attn = attn + B # bias in attn mat
 
         if M is not None:
             """
@@ -146,7 +146,7 @@ class BlockLocalAttention(nn.Module):
         idx2t = torch.arange(0, t).view(t, 1, 1).expand(t, h, w).contiguous().view(t * h * w, 1)
         idx2h = torch.arange(0, h).view(1, h, 1).expand(t, h, w).contiguous().view(t * h * w, 1)
         idx2w = torch.arange(0, w).view(1, 1, w).expand(t, h, w).contiguous().view(t * h * w, 1)
-        dt = idx2t - idx2t.transpose(0, 1)
+        dt = idx2t - idx2t.transpose(0, 1) # distance in time
         dt += torch.abs(dt.min())
         dt = dt.view(-1)
         self.register_buffer('dt', dt)
