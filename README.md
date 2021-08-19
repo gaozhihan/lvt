@@ -102,6 +102,25 @@ After training of VQVAE one should run code extraction on train data:
 CUDA_VISIBLE_DEVICES=<gpus> python tools/train_net.py --eval-only --config-file configs/vqvae/PR-DVQVAE2.yaml OUTPUT_DIR experiments/PR-DVQVAE2 TEST.EVALUATORS "CodesExtractor" DATASETS.TEST "kinetics_train_seq"
 ```
 
+:exclamation:The above command has problem when setting `DATASETS.TEST`. Usually we do not specify the `DATASETS.TEST` in command line, instead directly change it in `PR-DVQVAE2.yaml`.
+Notice that we can not set `bair_train` or `bair_test`, which lead to error:
+```
+Traceback (most recent call last):
+  File "tools/train_net.py", line 97, in <module>
+    launch(
+  File "/home/ubuntu/file/github/lvt/vidgen/engine/launch.py", line 64, in launch
+    main_func(*args)
+  File "tools/train_net.py", line 80, in main
+    res = MyTrainer.test(cfg, model)
+  File "/home/ubuntu/file/github/lvt/vidgen/engine/defaults.py", line 350, in test
+    results_i = inference_on_dataset(model, data_loader, evaluator)
+  File "/home/ubuntu/file/github/lvt/vidgen/evaluation/evaluator.py", line 129, in inference_on_dataset
+    evaluator.process(inputs, outputs)
+  File "/home/ubuntu/file/github/lvt/vidgen/evaluation/codes_extractor.py", line 42, in process
+    v_idx = input['video_idx']
+KeyError: 'video_idx'
+```
+set `bair_train_seq` and `bair_test_seq` instead.
 
 ## Train Latent Transformer
 
